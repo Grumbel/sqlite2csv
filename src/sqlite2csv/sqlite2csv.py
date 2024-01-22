@@ -24,7 +24,7 @@ import sys
 import sqlite3
 
 
-def sqlite2csv(cursor: sqlite3.Cursor, basepath: str):
+def sqlite2csv(cursor: sqlite3.Cursor, basepath: str) -> None:
     cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
     table_names = [x for (x,) in cursor.fetchall()]
 
@@ -55,7 +55,7 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     return results
 
 
-def main(argv: list[str]):
+def main(argv: list[str]) -> None:
     opts = parse_args(argv)
     print("hello world")
 
@@ -68,7 +68,7 @@ def main(argv: list[str]):
     conn.close()
 
 
-def main_entrypoint():
+def main_entrypoint() -> None:
     main(sys.argv)
 
 
