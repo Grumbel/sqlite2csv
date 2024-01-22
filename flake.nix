@@ -24,10 +24,10 @@
             checkPhase = ''
               runHook preCheck
               flake8 --max-line-length 120
-              pyright sqlite2csv  # tests
-              MYPYPATH=src mypy -p sqlite2csv  # -p tests
-              pylint sqlite2csv  # tests
-              # python3 -m unittest discover -v -s tests/
+              pyright src/sqlite2csv tests
+              MYPYPATH=src mypy -p sqlite2csv -p tests
+              pylint sqlite2csv tests
+              python3 -m unittest discover -v -s tests/
               runHook postCheck
             '';
 

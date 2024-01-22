@@ -23,15 +23,24 @@ import sys
 
 import sqlite3
 
+from typing import TextIO, Callable
 
-def sqlite2csv(cursor: sqlite3.Cursor, basepath: str) -> None:
+
+def csv_io_from_tablename(basepath: str, tablename: str) -> TextIO:
+    filename = f"{basepath}{tablename}.csv"
+    return open(filename, "w", newline='', encoding='utf-8')
+
+
+def sqlite2csv(conn: sqlite3.Connection, io_from_tablename: Callable[[str], TextIO]) -> None:
+    cursor = conn.cursor()
     cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
     table_names = [x for (x,) in cursor.fetchall()]
 
     for table_name in table_names:
-        csv_filename = f"{basepath}_{table_name}.csv"
-        print(f"Writing {csv_filename}")
-        with open(csv_filename, mode='w', newline='') as fout:
+        with io_from_tablename(table_name) as fout:
+            io_name = fout.name if hasattr(fout, 'name') else type(fout).__name__
+            print(f"Writing {io_name}")
+
             # Get header names
             cursor.execute(f"SELECT * from {table_name};")
             column_names = [x[0] for x in cursor.description]
@@ -45,27 +54,21 @@ def sqlite2csv(cursor: sqlite3.Cursor, basepath: str) -> None:
                 csv_writer.writerow(dict(zip(column_names, row)))
 
 
-def parse_args(argv: list[str]) -> argparse.Namespace:
+def parse_args(args: list[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description='Convert sqlite to csv')
     parser.add_argument('DATABASE',
                         help='Path to the SQLite database file')
     parser.add_argument('-o', '--output-base', required=True,
                         help='Basename for the .csv output')
-    results = parser.parse_args()
+    results = parser.parse_args(args)
     return results
 
 
 def main(argv: list[str]) -> None:
-    opts = parse_args(argv)
-    print("hello world")
+    opts = parse_args(argv[1:])
 
-    conn = sqlite3.connect(opts.DATABASE)
-    cursor = conn.cursor()
-
-    sqlite2csv(cursor, opts.output_base)
-
-    cursor.close()
-    conn.close()
+    with sqlite3.connect(opts.DATABASE) as conn:
+        sqlite2csv(conn, lambda tablename: csv_io_from_tablename(opts.output_base, tablename))
 
 
 def main_entrypoint() -> None:
