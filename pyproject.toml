@@ -1,0 +1,52 @@
+[build-system]
+requires = [ "setuptools>=61.2",]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sqlite2csv"
+version = "0.0.0"
+description = "Convert .sqlite3 database files to .csv"
+authors = [
+  { name = "Ingo Ruhnke", email = "grumbel@gmail.com" },
+]
+dependencies = [
+]
+
+[project.license]
+text = "GPLv3+"
+
+[project.urls]
+Homepage = "http://github.com/grumbel/sqlite2csv"
+
+[project.scripts]
+sqlite2csv = "sqlite2csv.sqlite2csv:main_entrypoint"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.flake8]
+max-line-length = "120"
+
+[tool.mypy]
+strict = true
+check_untyped_defs = true
+disallow_untyped_defs = true
+warn_return_any = true
+warn_unreachable = true
+warn_unused_configs = true
+ignore_missing_imports = true
+disallow_untyped_calls = false
+disallow_subclassing_any = false
+warn_redundant_casts = false
+
+[[tool.mypy.overrides]]
+disallow_untyped_calls = false
+
+[tool.pylint]
+disable = """
+"""
+
+[tool.pylint.FORMAT]
+max-line-length = "120"
+
+# EOF #
