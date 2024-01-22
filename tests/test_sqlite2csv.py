@@ -51,6 +51,16 @@ class Sqlite2CsvTestCase(unittest.TestCase):
                          "('name2', 'title2', 200), " +
                          "('name3', 'title3', 300)"
                          )
+            conn.execute("CREATE TABLE MyTable2 ( " +
+                         "id INTEGER PRIMARY KEY, " +
+                         "name TEXT NOT NULL, " +
+                         "title TEXT NOT NULL " +
+                         ")")
+            conn.execute("INSERT into MyTable2(name, title) VALUES " +
+                         "('name1, lastname1', 'title1 title1'), " +
+                         "('name2 lastname2', 'title2,title2'), " +
+                         "('name3, lastname3', 'title3 title3')"
+                         )
 
             sqlite2csv.sqlite2csv(conn, io_from_tablename)
 
@@ -61,7 +71,13 @@ class Sqlite2CsvTestCase(unittest.TestCase):
                   'id,name,title,number\r\n'
                   '1,name1,title1,100\r\n'
                   '2,name2,title2,200\r\n'
-                  '3,name3,title3,300\r\n')]
+                  '3,name3,title3,300\r\n'),
+                 ('MyTable2',
+                  'id,name,title\r\n'
+                  '1,"name1, lastname1",title1 title1\r\n'
+                  '2,name2 lastname2,"title2,title2"\r\n'
+                  '3,"name3, lastname3",title3 title3\r\n'),
+                 ]
 
             self.assertEqual(expected, results)
 
